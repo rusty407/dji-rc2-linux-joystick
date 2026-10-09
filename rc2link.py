@@ -1,11 +1,9 @@
-"""USB link to the DJI RC 2 (Mini 4 Pro remote) vendor bulk interface.
+"""Talks to the DJI RC 2 over USB.
 
-Once booted the RC 2 enumerates as 2ca3:1021 (briefly 18d1:4ee7 while booting).
-Interface 0 ("BULK Interface", EP 0x01 OUT / 0x81 IN) carries DJI DUML packets;
-there is no serial port.
+No serial port on this one. Once it's booted it shows up as 2ca3:1021 and
+interface 0 ("BULK Interface", EP 0x01/0x81) speaks DUML.
 
-Safety: send() refuses anything except the allowlisted commands below. Nothing
-here resets or reconfigures the device or detaches kernel drivers.
+send() only lets the commands in ALLOWED through.
 """
 import struct
 

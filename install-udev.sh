@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Lets rc2_joystick.py run without sudo. Run once with: sudo ./install-udev.sh
-#   - installs 70-rc2-joystick.rules (RC 2 USB access + /dev/uinput, for the logged-in user)
-#   - loads the uinput module now and at every boot
+# Run once with sudo so rc2_joystick.py works as your normal user.
+# Installs the udev rule and makes uinput load at boot.
 set -euo pipefail
 cd "$(dirname "$0")"
 if [[ $EUID -ne 0 ]]; then

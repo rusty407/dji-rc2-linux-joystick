@@ -1,9 +1,8 @@
-# DJI RC 2 (Mini 4 Pro remote) -> virtual joystick bridge (rc2_joystick.py).
-# Installed by install-udev.sh. The file must sort before 73-seat-late.rules,
-# which is where the "uaccess" tag turns into an ACL for the logged-in user.
+# rc2_joystick.py: lets the logged-in user use the RC 2 and /dev/uinput.
+# Has to sort before 73-seat-late.rules or the uaccess tag does nothing.
 
-# RC 2 once booted (2ca3:1021): let the desktop user claim its vendor bulk interface.
+# DJI RC 2, once booted
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2ca3", ATTR{idProduct}=="1021", TAG+="uaccess"
 
-# /dev/uinput: let the desktop user create virtual input devices (same rule Steam ships).
+# /dev/uinput (same rule Steam uses)
 KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"

@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
-"""DJI RC 2 -> virtual joystick bridge for FPV simulators (uinput + joydev).
+"""Use a DJI RC 2 as a Linux joystick (uinput), e.g. for FPV FreeRider.
 
-Polls the RC 2 over USB for stick positions (read-only DUML request 06/01) and
-mirrors them onto a virtual joystick that appears as /dev/input/event* and
-/dev/input/js*. Axes use RC transmitter (AETR) order, full range
--32768..32767, with up/right = max and throttle stick bottom = min:
-
-    ABS_X   roll        right stick left/right
-    ABS_Y   pitch       right stick up/down
-    ABS_Z   throttle    left stick up/down
-    ABS_RX  yaw         left stick left/right
-    ABS_RY  left dial   (gimbal)
-    ABS_RZ  right dial  (camera)
-
-Buttons: turning a dial to either end presses a button.
-    1 BTN_TRIGGER  left dial low end      2 BTN_THUMB  left dial high end
-    3 BTN_THUMB2   right dial low end     4 BTN_TOP    right dial high end
-
-The virtual device stays up while the RC 2 is unplugged (sticks centred,
-throttle at minimum) and the bridge reconnects automatically.
+Axes, -32768..32767, up/right = max, throttle all the way down = min:
+    ABS_X roll    ABS_Y pitch    ABS_Z throttle    ABS_RX yaw
+    ABS_RY left dial    ABS_RZ right dial
+Turning a dial to either end also presses a button (4 in total).
 
     rc2_joystick.py [--debug] [--rate HZ] [--throttle-half] [--config FILE]
     rc2_joystick.py --calibrate
@@ -60,8 +46,6 @@ def log(msg):
           flush=True)
 
 
-# --- calibration -----------------------------------------------------------
-
 def load_calibration(path):
     cal = {ch: {"min": RAW_MIN, "center": RAW_CENTER, "max": RAW_MAX, "deadzone": DEADZONES[ch], "invert": False}
            for ch in CHANNELS}
@@ -96,8 +80,6 @@ def to_output(x):
     return round((x + 1) / 2 * (OUT_MAX - OUT_MIN)) + OUT_MIN
 
 
-# --- RC 2 polling ------------------------------------------------------------
-
 def poll_sticks(rc, rate):
     """Yield raw channel tuples at up to `rate` Hz; raise LinkLost if the RC stops answering."""
     period = 1 / rate
@@ -118,8 +100,6 @@ def poll_sticks(rc, rate):
             raise LinkLost(f"no stick replies for {LINK_TIMEOUT:g} s")
         time.sleep(max(0.0, period - (time.monotonic() - t0)))
 
-
-# --- virtual joystick --------------------------------------------------------
 
 class VirtualJoystick:
     def __init__(self, cal, throttle_half):
@@ -201,8 +181,6 @@ class DebugView:
         btns = "".join("X" if v else "." for v in js.pressed.values())
         print(f"{self.rate:4.0f}Hz  {cols}  btn {btns}", end=self.end, flush=True)
 
-
-# --- modes ------------------------------------------------------------------
 
 def run_bridge(args):
     cal = load_calibration(args.config)

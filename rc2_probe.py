@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Probe the DJI RC 2 vendor bulk interface for DUML stick data.
+"""Poke at the RC 2's USB bulk interface. Used to figure out the stick data.
 
-Safety: the only packets this script can send are the RC-N1 stick request (06/01)
-and, with --sim, the simulator-mode enable (06/24 01). It never resets or
-reconfigures the device and never detaches kernel drivers.
+Only sends the stick request (06/01), plus simulator mode (06/24 01) with --sim.
 
-    rc2_probe.py listen  [--seconds N]           # read only, sends nothing
-    rc2_probe.py poll    [--seconds N] [--sim]   # request sticks, print packets
+    rc2_probe.py listen  [--seconds N]           # just listen, sends nothing
+    rc2_probe.py poll    [--seconds N] [--sim]   # ask for sticks, hexdump replies
     rc2_probe.py capture [--seconds N] [--sim] --out FILE
     rc2_probe.py analyze FILE
 """

@@ -1,6 +1,6 @@
-"""DJI DUML v1 packet framing, as used by the RC-N1 simulator tools.
+"""DJI DUML v1 packets (same framing the RC-N1 uses over serial).
 
-Packet layout (little-endian):
+Layout, little-endian:
     0     0x55 magic
     1-2   length (10 bits, whole packet incl. CRC16) | version << 10 (version = 1)
     3     CRC8 of bytes 0-2 (seed 0x77)
